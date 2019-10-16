@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const db = require('../inc/db.js').pool;
 const utils = require('../inc/utils.js');
-const pokedex = require('../data/pokedex/pokemon.json');
+const pokedex = require('../data/pokemon.json');
 
 const Raid = require('./Raid');
 const GymMember = require('./GymMember');

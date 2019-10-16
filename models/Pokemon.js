@@ -10,7 +10,7 @@ const db = require('../inc/db.js').pool;
 const utils = require('../inc/utils.js');
 const debug = require('debug')('devkat:db:pokemon');
 const debug_query = require('debug')('devkat:db:pokemon:sql');
-const pokedex = require('../data/pokedex/pokemon.json');
+const pokedex = require('../data/pokemon.json');
 
 
 /* Readability references. */
