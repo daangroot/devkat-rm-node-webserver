@@ -11,8 +11,6 @@ const utils = require('../inc/utils.js');
 const pokedex = require('../data/pokemon.json');
 
 const Raid = require('./Raid');
-const GymMember = require('./GymMember');
-const GymPokemon = require('./GymPokemon');
 
 
 /* Readability references. */
@@ -167,55 +165,6 @@ function prepareGymPromise(query, params) {
                         raid.pokemon_types = getPokemonTypes(pokedex, raid.pokemon_id) || [];
 
                         gym_refs['' + raid.gym_id].raid = raid;
-                    }
-                })
-                .then(() => GymMember.from_gym_ids(gym_ids))
-                .then((gymMembers) => {
-                    // Get gym Pokémon from gym members by
-                    // mapping pokemon_uid to gym member.
-                    const pokemon_uids = {};
-
-                    if (gymMembers.length > 0) {
-                        for (var i = 0; i < gymMembers.length; i++) {
-                            const member = gymMembers[i];
-                            pokemon_uids[member.pokemon_uid] = member;
-                        }
-
-                        return GymPokemon.from_pokemon_uids_map(pokemon_uids);
-                    } else {
-                        return {
-                            'map': pokemon_uids,
-                            'pokemon': []
-                        }
-                    }
-                })
-                .then((result) => {
-                    const map_obj = result.map;
-                    const gymPokes = result.pokemon;
-
-                    // Attach gym members to gyms.
-                    for (var i = 0; i < gymPokes.length; i++) {
-                        const poke = gymPokes[i];
-                        const member = map_obj['' + poke.pokemon_uid]
-                        const gym_id = member.gym_id;
-                        const gym = gym_refs[gym_id];
-
-                        // Avoid timezone issues. This is a UTC timestamp.
-                        poke.last_seen = poke.last_seen.replace(' ', 'T') + 'Z';
-
-                        // Convert datetime to UNIX timestamp.
-                        poke.last_seen = Date.parse(poke.last_seen) || 0;
-
-                        // Assign member data to the Pokémon being sent.
-                        poke.cp_decayed = member.cp_decayed;
-                        poke.last_scanned = member.last_scanned;
-                        poke.deployment_time = member.deployment_time;
-
-                        // Assign Pokémon data.
-                        poke.pokemon_name = getPokemonName(pokedex, poke.pokemon_id) || '';
-                        poke.pokemon_types = getPokemonTypes(pokedex, poke.pokemon_id) || [];
-
-                        gym.pokemon.push(poke);
                     }
 
                     const values = Object.keys(gym_refs).map((k) => gym_refs[k]);
